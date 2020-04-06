@@ -38,4 +38,16 @@ describe('todoMvc Tests', () => {
         cy.get('.todo-list li').should('not.exist')
     })
 
+    
+    it('should show all todos', () => {
+        initTodos('Clean room','Go for a walk')
+        cy.get('.toggle').eq(0).click()
+        cy.contains('.todo-list li').eq(0).should('have.class', 'completed')
+
+        cy.get('a').contains('All').click()
+        
+        cy.get('.todo-list li').should('have.length',2)
+    })
+
+    
 })
