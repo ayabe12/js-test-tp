@@ -13,7 +13,7 @@ describe('todoMvc Tests', () => {
 
     it('should add a new todo', () => {
         cy.get('.todo-list li').should('not.exist')
-        
+
         initTodos('Clean room')
 
         cy.get('.todo-list li').should('have.length',1)
@@ -25,7 +25,7 @@ describe('todoMvc Tests', () => {
         initTodos('Do homework')
 
         cy.get('.destroy').click({ force: true })
-        
+
         cy.get('.todo-list li').should('not.exist')
     })
 
@@ -34,19 +34,51 @@ describe('todoMvc Tests', () => {
 
         cy.get('.toggle-all').click({force : true})
         cy.get('.clear-completed').click()
-        
+
         cy.get('.todo-list li').should('not.exist')
     })
 
-    it('should clear completed todos', () => {
+    it('should show all todos', () => {
         initTodos('Clean room','Go for a walk')
         cy.get('.toggle').eq(0).click()
         cy.get('.todo-list li').eq(0).should('have.class', 'completed')
 
-        cy.get('.clear-completed').click()
+        cy.get('a').contains('All').click()
 
-        cy.get('.todo-list li').should('have.length',1)
-        cy.get('.view').find('label').should('have.text', 'Go for a walk')
+        cy.get('.todo-list li').should('have.length',2)
     })
 
+    it('should show active todos', () => {
+        initTodos('Clean room','Go for a walk')
+        cy.get('.toggle').eq(0).click()
+        cy.get('.todo-list li').eq(0).should('have.class', 'completed')
+
+        cy.get('a').contains('Active').click()
+
+        cy.get('.todo-list li').should('have.length',1)
+    })
+
+it('should show completed todos', () => {
+    initTodos('Clean room','Go for a walk')
+    cy.get('.toggle').eq(0).click()
+    cy.get('.todo-list li').eq(0).should('have.class', 'completed')
+
+    cy.get('a').contains('Completed').click()
+
+    cy.get('.todo-list li').should('have.length',1)
+    cy.get('.toggle').should('be.checked')
 })
+
+it('should clear completed todos', () => {
+    initTodos('Clean room','Go for a walk')
+    cy.get('.toggle').eq(0).click()
+    cy.get('.todo-list li').eq(0).should('have.class', 'completed')
+
+    cy.get('.clear-completed').click()
+
+    cy.get('.todo-list li').should('have.length',1)
+    cy.get('.view').find('label').should('have.text', 'Go for a walk')
+})
+
+})
+
