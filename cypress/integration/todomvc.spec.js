@@ -48,6 +48,26 @@ describe('todoMvc Tests', () => {
         
         cy.get('.todo-list li').should('have.length',2)
     })
+    it('should show active todos', () => {
+        initTodos('Clean room','Go for a walk')
+        cy.get('.toggle').eq(0).click()
+        cy.get('.todo-list li').eq(0).should('have.class', 'completed')
+ 
+        cy.get('a').contains('Active').click()
+ 
+        cy.get('.todo-list li').should('have.length',1)
+    })
+ 
+    it('should show completed todos', () => {
+        initTodos('Clean room','Go for a walk')
+        cy.get('.toggle').eq(0).click()
+        cy.get('.todo-list li').eq(0).should('have.class', 'completed')
+ 
+        cy.get('a').contains('Completed').click()
+ 
+        cy.get('.todo-list li').should('have.length',1)
+        cy.get('.toggle').should('be.checked')
+    })
 
     
 })
