@@ -1,9 +1,21 @@
-/// <reference types="Cypress" 
-
 function initTodos(...todos){
-    for(var i=0;i<todos.length;i++){
-        cy.get('.new-todo').type(todos[i]+'{enter}')
-    }
+    todos.forEach((todo) => {
+        cy.get('.new-todo').type(todo+'{enter}')
+    })
+}
+
+function checkTodoListSize(size){
+    cy.get('.todo-list li').should('have.length',size)
+}
+
+function initTwoTodosOneActiveAndOneCompleted(){
+    initTodos('Clean room','Go for a walk')
+    cy.get('.toggle').first().click()
+    cy.get('.todo-list li').first().should('have.class', 'completed')
+}
+
+function showTodoListByCategory(category){
+    cy.get('.filters li a').contains(category).click()
 }
 
 describe('todoMvc Tests', () => {
@@ -16,7 +28,7 @@ describe('todoMvc Tests', () => {
 
         initTodos('Clean room')
 
-        cy.get('.todo-list li').should('have.length',1)
+        checkTodoListSize(1)
         cy.get('.view').find('label').should('have.text', 'Clean room')
         cy.get('.toggle').should('not.be.checked')
     })
@@ -39,46 +51,38 @@ describe('todoMvc Tests', () => {
     })
 
     it('should show all todos', () => {
-        initTodos('Clean room','Go for a walk')
-        cy.get('.toggle').eq(0).click()
-        cy.get('.todo-list li').eq(0).should('have.class', 'completed')
+        initTwoTodosOneActiveAndOneCompleted()
 
-        cy.get('a').contains('All').click()
+        showTodoListByCategory('All')
 
-        cy.get('.todo-list li').should('have.length',2)
+        checkTodoListSize(2)
     })
 
     it('should show active todos', () => {
-        initTodos('Clean room','Go for a walk')
-        cy.get('.toggle').eq(0).click()
-        cy.get('.todo-list li').eq(0).should('have.class', 'completed')
+        initTwoTodosOneActiveAndOneCompleted()
 
-        cy.get('a').contains('Active').click()
+        showTodoListByCategory('Active')
 
-        cy.get('.todo-list li').should('have.length',1)
+        checkTodoListSize(1)
     })
 
-it('should show completed todos', () => {
-    initTodos('Clean room','Go for a walk')
-    cy.get('.toggle').eq(0).click()
-    cy.get('.todo-list li').eq(0).should('have.class', 'completed')
+    it('should show completed todos', () => {
+        initTwoTodosOneActiveAndOneCompleted()
 
-    cy.get('a').contains('Completed').click()
+        showTodoListByCategory('Completed')
 
-    cy.get('.todo-list li').should('have.length',1)
-    cy.get('.toggle').should('be.checked')
-})
+        checkTodoListSize(1)
+        cy.get('.toggle').should('be.checked')
+    })
 
-it('should clear completed todos', () => {
-    initTodos('Clean room','Go for a walk')
-    cy.get('.toggle').eq(0).click()
-    cy.get('.todo-list li').eq(0).should('have.class', 'completed')
+    it('should clear completed todos', () => {
+        initTwoTodosOneActiveAndOneCompleted()
 
-    cy.get('.clear-completed').click()
+        cy.get('.clear-completed').click()
 
-    cy.get('.todo-list li').should('have.length',1)
-    cy.get('.view').find('label').should('have.text', 'Go for a walk')
-})
+        checkTodoListSize(1)
+        cy.get('.view > label').should('have.text', 'Go for a walk')
+    })
 
 })
 
